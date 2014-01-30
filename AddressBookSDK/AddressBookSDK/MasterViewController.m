@@ -22,8 +22,31 @@
 
 @end
 
-
 @implementation MasterViewController
+
+- (void)awakeFromNib
+{
+    [super awakeFromNib];
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+	// Do any additional setup after loading the view, typically from a nib.
+    
+    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(showAddressBook)];
+    
+    self.navigationItem.rightBarButtonItem = addButton;
+}
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+
+#pragma mark - Private method implementation
 
 -(void)showAddressBook{
     _addressBookController = [[ABPeoplePickerNavigationController alloc] init];
@@ -31,38 +54,70 @@
     [self presentViewController:_addressBookController animated:YES completion:nil];
 }
 
--(void)peoplePickerNavigationControllerDidCancel:(ABPeoplePickerNavigationController *)peoplePicker{
-    [_addressBookController dismissViewControllerAnimated:YES completion:nil];
+
+#pragma mark - Table View
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
 }
 
--(BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker shouldContinueAfterSelectingPerson:(ABRecordRef)person property:(ABPropertyID)property identifier:(ABMultiValueIdentifier)identifier{
-    return NO;
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    if (_arrContactsData) {
+        return _arrContactsData.count;
+    }
+    else{
+        return 0;
+    }
 }
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
+    
+    NSDictionary *contactInfoDict = [_arrContactsData objectAtIndex:indexPath.row];
+    cell.textLabel.text = [NSString stringWithFormat:@"%@ %@", [contactInfoDict objectForKey:@"firstName"], [contactInfoDict objectForKey:@"lastName"]];
+    
+    return cell;
+}
+
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([[segue identifier] isEqualToString:@"showDetail"]) {
+        NSDictionary *contactDetailsDictionary = [_arrContactsData objectAtIndex:self.tableView.indexPathForSelectedRow.row];
+        [[segue destinationViewController] setDictContactDetails:contactDetailsDictionary];
+    }
+}
+
+
+#pragma mark - ABPeoplePickerNavigationController Delegate method implementation
 
 -(BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker shouldContinueAfterSelectingPerson:(ABRecordRef)person{
     
-    // Initialize a mutable dictionary and give it initial values
+    // Initialize a mutable dictionary and give it initial values.
     NSMutableDictionary *contactInfoDict = [[NSMutableDictionary alloc]
                                             initWithObjects:@[@"", @"", @"", @"", @"", @"", @"", @"", @""]
                                             forKeys:@[@"firstName", @"lastName", @"mobileNumber", @"homeNumber", @"homeEmail", @"workEmail", @"address", @"zipCode", @"city"]];
     
-    // Use a general Core Foundation object
+    // Use a general Core Foundation object.
     CFTypeRef generalCFObject = ABRecordCopyValue(person, kABPersonFirstNameProperty);
     
-    // Get the first name
+    // Get the first name.
     if (generalCFObject) {
         [contactInfoDict setObject:(__bridge NSString *)generalCFObject forKey:@"firstName"];
         CFRelease(generalCFObject);
     }
     
-    // Get the last name
+    // Get the last name.
     generalCFObject = ABRecordCopyValue(person, kABPersonLastNameProperty);
     if (generalCFObject) {
         [contactInfoDict setObject:(__bridge NSString *)generalCFObject forKey:@"lastName"];
         CFRelease(generalCFObject);
     }
     
-    // Get the phone numbers as a multi-value property
+    // Get the phone numbers as a multi-value property.
     ABMultiValueRef phonesRef = ABRecordCopyValue(person, kABPersonPhoneProperty);
     for (int i=0; i<ABMultiValueGetCount(phonesRef); i++) {
         CFStringRef currentPhoneLabel = ABMultiValueCopyLabelAtIndex(phonesRef, i);
@@ -137,56 +192,14 @@
     return NO;
 }
 
-- (void)awakeFromNib
-{
-    [super awakeFromNib];
-}
 
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
-    
-    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(showAddressBook)];
-    
-    self.navigationItem.rightBarButtonItem = addButton;
-
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+-(BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker shouldContinueAfterSelectingPerson:(ABRecordRef)person property:(ABPropertyID)property identifier:(ABMultiValueIdentifier)identifier{
+    return NO;
 }
 
 
-#pragma mark - Table View
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    return 1;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
-
- 
-    return cell;
-}
-
-
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    if ([[segue identifier] isEqualToString:@"showDetail"]) {
-        NSDictionary *contactDetailsDictionary = [_arrContactsData objectAtIndex:self.tableView.indexPathForSelectedRow.row];
-        [[segue destinationViewController] setDictContactDetails:contactDetailsDictionary];
-    }
+-(void)peoplePickerNavigationControllerDidCancel:(ABPeoplePickerNavigationController *)peoplePicker{
+    [_addressBookController dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end
