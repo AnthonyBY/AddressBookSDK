@@ -8,13 +8,14 @@
 
 #import "DetailViewController.h"
 
-@interface DetailViewController () 
+@interface DetailViewController ()
 
 @property (weak, nonatomic) IBOutlet UILabel *lblContactName;
 @property (weak, nonatomic) IBOutlet UIImageView *imgContactImage;
 @property (weak, nonatomic) IBOutlet UITableView *tblContactDetails;
 
 -(void)populateContactData;
+-(void)performPhoneAction:(BOOL)shouldMakeCall;
 
 @end
 
@@ -33,6 +34,99 @@
     
     [_tblContactDetails reloadData];
 }
+
+#pragma mark - Make Call and send SMS
+
+
+-(void)performPhoneAction:(BOOL)shouldMakeCall{
+    if (![[_dictContactDetails objectForKey:@"mobileNumber"] isEqualToString:@""] &&
+        ![[_dictContactDetails objectForKey:@"homeNumber"] isEqualToString:@""]) {
+        UIActionSheet *phoneOptions = [[UIActionSheet alloc] initWithTitle:@"Pick a number"
+                                                                  delegate:self
+                                                         cancelButtonTitle:@"Cancel"
+                                                    destructiveButtonTitle:@""
+                                                         otherButtonTitles:[_dictContactDetails objectForKey:@"mobileNumber"], [_dictContactDetails objectForKey:@"homeNumber"], nil];
+        [phoneOptions showInView:self.view];
+        
+        if (shouldMakeCall) {
+            [phoneOptions setTag:101];
+        }
+        else{
+            [phoneOptions setTag:102];
+        }
+        
+    }
+    else{
+        NSString *selectedPhoneNumber = nil;
+        
+        if (![[_dictContactDetails objectForKey:@"mobileNumber"] isEqualToString:@""]) {
+            selectedPhoneNumber = [_dictContactDetails objectForKey:@"mobileNumber"];
+            
+        }
+        
+        if (![[_dictContactDetails objectForKey:@"homeNumber"] isEqualToString:@""]) {
+            selectedPhoneNumber = [_dictContactDetails objectForKey:@"homeNumber"];
+        }
+        
+        
+        if (selectedPhoneNumber != nil) {
+            if (shouldMakeCall) {
+                [self makeCallToNumber:selectedPhoneNumber];
+            }
+            else{
+                [self sendSMSToNumber:selectedPhoneNumber];
+            }
+            
+        }
+    }
+}
+
+-(void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result{
+    [controller dismissViewControllerAnimated:YES completion:nil];
+}
+
+-(void)sendSMSToNumber:(NSString *)numberToSend{
+    if (![MFMessageComposeViewController canSendText]) {
+        NSLog(@"Unable to send SMS message.");
+    }
+    else {
+        MFMessageComposeViewController *sms = [[MFMessageComposeViewController alloc] init];
+        [sms setMessageComposeDelegate:self];
+        
+        [sms setRecipients:[NSArray arrayWithObjects:numberToSend, nil]];
+        [sms setBody:@"Enter the message here!"];
+        [self presentViewController:sms animated:YES completion:nil];
+    }
+}
+
+-(void)makeCallToNumber:(NSString *)numberToCall{
+    NSURL *phoneURL = [NSURL URLWithString:[NSString stringWithFormat:@"tel:%@", numberToCall]];
+    if ([[UIApplication sharedApplication] canOpenURL:phoneURL]) {
+        [[UIApplication sharedApplication] openURL:phoneURL];
+    }
+}
+
+-(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if (buttonIndex != 3) {
+        NSString *selectedPhoneNumber = [actionSheet buttonTitleAtIndex:buttonIndex];
+        
+        if ([actionSheet tag] == 101) {
+            [self makeCallToNumber:selectedPhoneNumber];
+        }
+        else{
+            [self sendSMSToNumber:selectedPhoneNumber];
+        }
+    }
+}
+
+- (IBAction)makeCall:(UIBarButtonItem *)sender {
+     [self performPhoneAction:YES];
+}
+
+- (IBAction)sendSMS:(UIBarButtonItem *)sender {
+     [self performPhoneAction:NO];
+}
+
 
 #pragma mark - Managing the detail item
 
