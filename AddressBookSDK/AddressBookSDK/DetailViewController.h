@@ -8,9 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
-@interface DetailViewController : UIViewController
+@interface DetailViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
 
-@property (strong, nonatomic) id detailItem;
+@property (nonatomic, strong) NSDictionary *dictContactDetails;
 
-@property (weak, nonatomic) IBOutlet UILabel *detailDescriptionLabel;
 @end
