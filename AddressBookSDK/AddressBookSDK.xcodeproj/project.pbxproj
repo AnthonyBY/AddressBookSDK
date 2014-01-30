@@ -22,6 +22,7 @@
 		F3C17049189A95E80055A57B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3C17028189A95E80055A57B /* UIKit.framework */; };
 		F3C17051189A95E80055A57B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F3C1704F189A95E80055A57B /* InfoPlist.strings */; };
 		F3C17053189A95E80055A57B /* AddressBookSDKTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F3C17052189A95E80055A57B /* AddressBookSDKTests.m */; };
+		F3C1705D189AB9BF0055A57B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F3C1705C189AB9BF0055A57B /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +57,7 @@
 		F3C1704E189A95E80055A57B /* AddressBookSDKTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "AddressBookSDKTests-Info.plist"; sourceTree = "<group>"; };
 		F3C17050189A95E80055A57B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F3C17052189A95E80055A57B /* AddressBookSDKTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AddressBookSDKTests.m; sourceTree = "<group>"; };
+		F3C1705C189AB9BF0055A57B /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +87,7 @@
 		F3C17018189A95E70055A57B = {
 			isa = PBXGroup;
 			children = (
+				F3C1705C189AB9BF0055A57B /* README.md */,
 				F3C1702A189A95E80055A57B /* AddressBookSDK */,
 				F3C1704C189A95E80055A57B /* AddressBookSDKTests */,
 				F3C17023189A95E80055A57B /* Frameworks */,
@@ -235,6 +238,7 @@
 			files = (
 				F3C17040189A95E80055A57B /* Images.xcassets in Resources */,
 				F3C1702F189A95E80055A57B /* InfoPlist.strings in Resources */,
+				F3C1705D189AB9BF0055A57B /* README.md in Resources */,
 				F3C17038189A95E80055A57B /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
